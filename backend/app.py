@@ -15,7 +15,7 @@ model = pickle.load(open("flight_price_prediction_model.pkl", "rb"))
 @app.route("/")
 @cross_origin()
 def home():
-    return render_template("home.html")
+    return jsonify({'msg':'this is home page'})
 
 @app.route("/api/predict", methods=["POST"])
 @cross_origin()
