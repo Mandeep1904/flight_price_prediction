@@ -10,18 +10,12 @@ import pandas as pd
 load_dotenv()
 
 app = Flask(__name__)
-# CORS(app)
-CORS(app, resources={r"/*": {"origins": [
-    "https://flight-price-prediction-frontend.onrender.com",
-    "http://localhost:5173"
-]}})
 
+Get the frontend URL from the environment variables
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 
-# Get the frontend URL from the environment variables
-# FRONTEND_URL = os.getenv("FRONTEND_URL")
-
-# Enable CORS for the specified frontend URL
-# CORS(app, resources={r"/*": {"origins": FRONTEND_URL}})
+Enable CORS for the specified frontend URL
+CORS(app, resources={r"/*": {"origins": FRONTEND_URL}})
 
 model = pickle.load(open("flight_price_prediction_model.pkl", "rb"))
 
