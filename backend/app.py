@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify
 from flask_cors import cross_origin, CORS
 from dotenv import load_dotenv
+import os
 import sklearn
 import pickle
 import pandas as pd
@@ -9,16 +10,22 @@ import pandas as pd
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
+
+# Get the frontend URL from the environment variables
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+
+# Enable CORS for the specified frontend URL
+CORS(app, resources={r"/*": {"origins": FRONTEND_URL}})
+
 model = pickle.load(open("flight_price_prediction_model.pkl", "rb"))
 
 @app.route("/")
-@cross_origin()
+# @cross_origin()
 def home():
     return jsonify({'msg':'this is home page'})
 
 @app.route("/api/predict", methods=["POST"])
-@cross_origin()
 def predict():
     if request.method == "POST":
         # Check the Content-Type header
