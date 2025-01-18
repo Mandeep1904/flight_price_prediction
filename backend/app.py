@@ -10,17 +10,12 @@ import pandas as pd
 load_dotenv()
 
 app = Flask(__name__)
-
-# Get the frontend URL from the environment variables
-FRONTEND_URL = os.getenv("FRONTEND_URL")
-
-# Enable CORS for the specified frontend URL
-CORS(app, resources={r"/*": {"origins": FRONTEND_URL}})
+CORS(app)
 
 model = pickle.load(open("flight_price_prediction_model.pkl", "rb"))
 
 @app.route("/")
-# @cross_origin()
+@cross_origin()
 def home():
     return jsonify({'msg':'this is home page'})
 
