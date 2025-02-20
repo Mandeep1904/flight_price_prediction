@@ -22,33 +22,36 @@ const FlightPriceForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Convert departure and arrival time strings into Date objects
     const depTime = new Date(formData.Dep_Time);
     const arrivalTime = new Date(formData.Arrival_Time);
-
+  
     // Check if the departure time is in the future and arrival time is in the past
     const currentTime = new Date();
-
+  
     if (depTime > currentTime && arrivalTime < currentTime) {
       toast.error("Departure date is in the future and arrival date is in the past!");
       return;
     }
-
+  
     // Check if arrival date is before departure date
     if (arrivalTime < depTime) {
       toast.error("Arrival date cannot be before departure date!");
       return;
     }
-
+  
     try {
-      const response = await axios.post("http://127.0.0.1:5000/api/predict", formData);
+      const API_URL = import.meta.env.VITE_API_BASE_URL; // Get backend URL from .env
+      const response = await axios.post(`${API_URL}/predict`, formData); // Send request
+  
       setPrediction(response.data.prediction_text);
     } catch (error) {
-      console.error("Error submitting the form", error);
+      console.error("Error submitting the form:", error.response?.data || error.message);
       toast.error("Something went wrong! Please try again.");
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 relative">
