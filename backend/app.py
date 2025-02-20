@@ -20,6 +20,7 @@ def home():
     return jsonify({'msg':'this is home page'})
 
 @app.route("/api/predict", methods=["POST"])
+@cross_origin()
 def predict():
     if request.method == "POST":
         # Check the Content-Type header

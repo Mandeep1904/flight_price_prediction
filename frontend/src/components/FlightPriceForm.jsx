@@ -43,7 +43,11 @@ const FlightPriceForm = () => {
   
     try {
       const API_URL = import.meta.env.VITE_API_BASE_URL; // Get backend URL from .env
-      const response = await axios.post(`${API_URL}/predict`, formData); // Send request
+      const response = await axios.post(`${API_URL}/api/predict`, formData, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }); // Send request
   
       setPrediction(response.data.prediction_text);
     } catch (error) {
