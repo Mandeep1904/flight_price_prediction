@@ -1,18 +1,18 @@
 import PropTypes from "prop-types";
 import {
+  ResponsiveContainer,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 
 const modelPerformance = [
-  { model: "Random Forest", r2: 0.89, mae: 450, mse: 100000 },
-  { model: "Decision Tree", r2: 0.78, mae: 620, mse: 180000 },
-  { model: "Linear Regression", r2: 0.71, mae: 750, mse: 220000 },
-  { model: "SVR", r2: 0.65, mae: 900, mse: 250000 },
+  { model: "Random Forest", r2: 0.81 },
+  { model: "Decision Tree", r2: 0.72 },
+  { model: "Linear Regression", r2: 0.61 },
+  { model: "SVR", r2: -0.00041 },
 ];
 
 const datasetColumns = [
@@ -99,7 +99,7 @@ const ModelInfo = ({ goBack }) => {
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={modelPerformance}>
             <XAxis dataKey="model" stroke="#333" />
-            <YAxis stroke="#333" />
+            <YAxis stroke="#333" domain={[-0.1, 1]} />
             <Tooltip
               cursor={{ fill: "#ddd" }}
               contentStyle={{ backgroundColor: "#fff", borderRadius: "8px" }}
