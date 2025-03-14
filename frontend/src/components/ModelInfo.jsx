@@ -109,6 +109,20 @@ const ModelInfo = ({ goBack }) => {
         </ResponsiveContainer>
       </div>
 
+      {/* Why Random Forest ? */}
+      <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-6">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+          Why Random Forest?
+        </h2>
+        <p className="text-gray-700">
+          Random Forest is chosen due to its ensemble learning approach,
+          reducing overfitting and improving generalization. It creates multiple
+          decision trees and averages their results for more accurate
+          predictions. It efficiently handles missing values, categorical data,
+          and outliers, making it robust for flight price prediction.
+        </p>
+      </div>
+
       {/* Dataset Information Table */}
       <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
@@ -142,6 +156,38 @@ const ModelInfo = ({ goBack }) => {
         </div>
       </div>
 
+      {/* Hyperparameter Tuning section */}
+      <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-6">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+          Hyperparameter Tuning
+        </h2>
+        <p className="text-gray-700">
+          Hyperparameter tuning significantly improved the model’s accuracy.
+          Below are the key tuned parameters:
+        </p>
+        <ul className="list-disc ml-6 text-gray-700">
+          <li>
+            <strong>n_estimators:</strong> Increased number of trees in the
+            forest, enhancing stability.
+          </li>
+          <li>
+            <strong>max_depth:</strong> Limited depth to prevent overfitting.
+          </li>
+          <li>
+            <strong>min_samples_split:</strong> Ensured a minimum number of
+            samples per split for generalization.
+          </li>
+          <li>
+            <strong>min_samples_leaf:</strong> Avoided tiny branches that
+            overfit training data.
+          </li>
+        </ul>
+        <p className="mt-4 text-gray-700">
+          Before tuning, the model’s R2 Score was <strong>0.7975 </strong>.
+          After tuning, it improved to <strong>0.8134</strong>.
+        </p>
+      </div>
+
       {/* Back Button */}
       <button
         onClick={goBack}
@@ -158,3 +204,4 @@ ModelInfo.propTypes = {
 };
 
 export default ModelInfo;
+
