@@ -109,81 +109,37 @@ const ModelInfo = ({ goBack }) => {
         </ResponsiveContainer>
       </div>
 
-      {/* Why Random Forest ? */}
-      <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Why Random Forest?
-        </h2>
-        <p className="text-gray-700">
-          Random Forest is chosen due to its ensemble learning approach,
-          reducing overfitting and improving generalization. It creates multiple
-          decision trees and averages their results for more accurate
-          predictions. It efficiently handles missing values, categorical data,
-          and outliers, making it robust for flight price prediction.
-        </p>
-      </div>
-
       {/* Dataset Information Table */}
       <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           Dataset Columns & Their Roles
         </h2>
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-blue-600 text-white">
-              <th className="border border-gray-300 px-4 py-2">Column Name</th>
-              <th className="border border-gray-300 px-4 py-2">Role</th>
-              <th className="border border-gray-300 px-4 py-2">
-                Impact on Prediction
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {datasetColumns.map((col, index) => (
-              <tr key={index} className="bg-white text-gray-700">
-                <td className="border border-gray-300 px-4 py-2 font-semibold">
-                  {col.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">{col.role}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {col.description}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse border border-gray-300 min-w-[600px]">
+            <thead>
+              <tr className="bg-blue-600 text-white">
+                <th className="border border-gray-300 px-4 py-2">Column Name</th>
+                <th className="border border-gray-300 px-4 py-2">Role</th>
+                <th className="border border-gray-300 px-4 py-2">
+                  Impact on Prediction
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Hyperparameter Tuning section */}
-      <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Hyperparameter Tuning
-        </h2>
-        <p className="text-gray-700">
-          Hyperparameter tuning significantly improved the model’s accuracy.
-          Below are the key tuned parameters:
-        </p>
-        <ul className="list-disc ml-6 text-gray-700">
-          <li>
-            <strong>n_estimators:</strong> Increased number of trees in the
-            forest, enhancing stability.
-          </li>
-          <li>
-            <strong>max_depth:</strong> Limited depth to prevent overfitting.
-          </li>
-          <li>
-            <strong>min_samples_split:</strong> Ensured a minimum number of
-            samples per split for generalization.
-          </li>
-          <li>
-            <strong>min_samples_leaf:</strong> Avoided tiny branches that
-            overfit training data.
-          </li>
-        </ul>
-        <p className="mt-4 text-gray-700">
-          Before tuning, the model’s R2 Score was <strong>0.7975 </strong>.
-          After tuning, it improved to <strong>0.8134</strong>.
-        </p>
+            </thead>
+            <tbody>
+              {datasetColumns.map((col, index) => (
+                <tr key={index} className="bg-white text-gray-700">
+                  <td className="border border-gray-300 px-4 py-2 font-semibold">
+                    {col.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">{col.role}</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {col.description}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Back Button */}
