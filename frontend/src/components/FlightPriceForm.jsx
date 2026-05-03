@@ -1,6 +1,15 @@
 import { useState } from "react";
-import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import { 
+  Calendar, 
+  MapPin, 
+  Plane, 
+  Clock, 
+  Users, 
+  TrendingUp,
+  ArrowRight,
+  AlertCircle
+} from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 
 const FlightPriceForm = () => {
@@ -14,6 +23,7 @@ const FlightPriceForm = () => {
   });
 
   const [prediction, setPrediction] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +32,7 @@ const FlightPriceForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
   
     // Convert departure and arrival time strings into Date objects
     const depTime = new Date(formData.Dep_Time);
@@ -31,157 +42,315 @@ const FlightPriceForm = () => {
     const currentTime = new Date();
   
     if (depTime > currentTime && arrivalTime < currentTime) {
-      toast.error("Departure date is in the future and arrival date is in the past!");
+      toast.error("Departure date is in the future and arrival date is in the past!", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setIsLoading(false);
       return;
     }
   
     // Check if arrival date is before departure date
     if (arrivalTime < depTime) {
-      toast.error("Arrival date cannot be before departure date!");
+      toast.error("Arrival date cannot be before departure date!", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setIsLoading(false);
       return;
     }
   
     try {
-      const API_URL = import.meta.env.VITE_API_BASE_URL; // Get backend URL from .env
-      const response = await axios.post(`${API_URL}/api/predict`, formData, {
+      const API_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000"; // Fallback for development
+      const response = await fetch(`${API_URL}/api/predict`, {
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json"
-        }
-    }); // Send request
-  
-      setPrediction(response.data.prediction_text);
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      const data = await response.json();
+      setPrediction(data.prediction_text);
+      toast.success("Price prediction generated successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
-      console.error("Error submitting the form:", error.response?.data || error.message);
-      toast.error("Something went wrong! Please try again.");
+      console.error("Error submitting the form:", error.message);
+      toast.error("Something went wrong! Please try again.", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
-  
+
+  const cities = [
+    { value: "Delhi", label: "Delhi" },
+    { value: "Kolkata", label: "Kolkata" },
+    { value: "Mumbai", label: "Mumbai" },
+    { value: "Chennai", label: "Chennai" },
+    { value: "Cochin", label: "Cochin" },
+    { value: "New Delhi", label: "New Delhi" },
+    { value: "Hyderabad", label: "Hyderabad" }
+  ];
+
+  const airlines = [
+    { value: "Jet Airways", label: "Jet Airways" },
+    { value: "IndiGo", label: "IndiGo" },
+    { value: "Air India", label: "Air India" },
+    { value: "Multiple carriers", label: "Multiple carriers" },
+    { value: "SpiceJet", label: "SpiceJet" },
+    { value: "Vistara", label: "Vistara" },
+    { value: "Air Asia", label: "Air Asia" },
+    { value: "GoAir", label: "GoAir" },
+    { value: "Multiple carriers Premium economy", label: "Multiple carriers Premium" },
+    { value: "Jet Airways Business", label: "Jet Airways Business" },
+    { value: "Vistara Premium economy", label: "Vistara Premium" },
+    { value: "Trujet", label: "Trujet" }
+  ];
+
+  const stops = [
+    { value: "0", label: "Non-stop", icon: "✈️" },
+    { value: "1", label: "1 Stop", icon: "1️⃣" },
+    { value: "2", label: "2 Stops", icon: "2️⃣" },
+    { value: "3", label: "3 Stops", icon: "3️⃣" },
+    { value: "4", label: "4 Stops", icon: "4️⃣" }
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 relative">
-      <div className="absolute inset-0 bg-cover bg-center bg-opacity-50" style={{ backgroundImage: "url('https://static.vecteezy.com/system/resources/previews/033/307/449/non_2x/airplane-flying-at-sunset-transporting-passengers-on-a-business-journey-generated-by-ai-free-photo.jpg')" }}></div>
-
-      {/* Form */}
-      <div className="container mx-auto mt-10 max-w-4xl bg-white bg-opacity-80 shadow-md rounded-lg p-6 z-10 relative">
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="card bg-gray-50 p-4 rounded-lg">
-              <h5 className="font-bold mb-2">Departure Date</h5>
-              <input
-                type="datetime-local"
-                name="Dep_Time"
-                value={formData.Dep_Time}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              />
-            </div>
-
-            <div className="card bg-gray-50 p-4 rounded-lg">
-              <h5 className="font-bold mb-2">Arrival Date</h5>
-              <input
-                type="datetime-local"
-                name="Arrival_Time"
-                value={formData.Arrival_Time}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              />
-            </div>
-
-            <div className="card bg-gray-50 p-4 rounded-lg">
-              <h5 className="font-bold mb-2">Source 📍</h5>
-              <select
-                name="Source"
-                value={formData.Source}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              >
-                <option value="Delhi">Delhi</option>
-                <option value="Kolkata">Kolkata</option>
-                <option value="Mumbai">Mumbai</option>
-                <option value="Chennai">Chennai</option>
-              </select>
-            </div>
-
-            <div className="card bg-gray-50 p-4 rounded-lg">
-              <h5 className="font-bold mb-2">Destination 📍</h5>
-              <select
-                name="Destination"
-                value={formData.Destination}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              >
-                <option value="Cochin">Cochin</option>
-                <option value="Delhi">Delhi</option>
-                <option value="New Delhi">New Delhi</option>
-                <option value="Hyderabad">Hyderabad</option>
-                <option value="Kolkata">Kolkata</option>
-              </select>
-            </div>
-
-            <div className="card bg-gray-50 p-4 rounded-lg">
-              <h5 className="font-bold mb-2">Stoppage</h5>
-              <select
-                name="stops"
-                value={formData.stops}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              >
-                <option value="0">Non-Stop</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-              </select>
-            </div>
-
-            <div className="card bg-gray-50 p-4 rounded-lg">
-              <h5 className="font-bold mb-2">Which Airline you want to travel?</h5>
-              <select
-                name="airline"
-                value={formData.airline}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              >
-                <option value="Jet Airways">Jet Airways</option>
-                <option value="IndiGo">IndiGo</option>
-                <option value="Air India">Air India</option>
-                <option value="Multiple carriers">Multiple carriers</option>
-                <option value="SpiceJet">SpiceJet</option>
-                <option value="Vistara">Vistara</option>
-                <option value="Air Asia">Air Asia</option>
-                <option value="GoAir">GoAir</option>
-                <option value="Multiple carriers Premium economy">Multiple carriers Premium economy</option>
-                <option value="Jet Airways Business">Jet Airways Business</option>
-                <option value="Vistara Premium economy">Vistara Premium economy</option>
-                <option value="Trujet">Trujet</option>
-              </select>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/20">
+      {/* Hero Section */}
+      <div className="pt-8 pb-12">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="inline-flex items-center space-x-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <TrendingUp className="w-4 h-4" />
+            <span>AI-Powered Price Prediction</span>
           </div>
-
-          <div className="mt-6 flex justify-center">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white p-3 rounded shadow hover:bg-blue-700"
-            >
-              Predict
-            </button>
-          </div>
-        </form>
-
-        {prediction && (
-          <div className="mt-6 p-4 bg-green-50 text-green-800 border border-green-300 rounded">
-            <h3>{prediction}</h3>
-          </div>
-        )}
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Find the Best Flight Prices
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Get accurate price predictions powered by machine learning to make smarter travel decisions.
+          </p>
+        </div>
       </div>
 
-      <ToastContainer />
+      {/* Form Section */}
+      <form  onSubmit={handleSubmit}>
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-3xl shadow-xl shadow-black/5 overflow-hidden">
+            <div className="p-6 md:p-8">
+              <div className="space-y-6">
+                {/* Flight Route */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                      <MapPin className="w-4 h-4 text-blue-500" />
+                      <span>From</span>
+                    </label>
+                    <select
+                      name="Source"
+                      value={formData.Source}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                      required
+                    >
+                      {cities.map(city => (
+                        <option key={city.value} value={city.value}>{city.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                      <MapPin className="w-4 h-4 text-purple-500" />
+                      <span>To</span>
+                    </label>
+                    <select
+                      name="Destination"
+                      value={formData.Destination}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                      required
+                    >
+                      {cities.map(city => (
+                        <option key={city.value} value={city.value}>{city.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Date & Time */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                      <Calendar className="w-4 h-4 text-green-500" />
+                      <span>Departure</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      name="Dep_Time"
+                      value={formData.Dep_Time}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                      <Clock className="w-4 h-4 text-orange-500" />
+                      <span>Arrival</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      name="Arrival_Time"
+                      value={formData.Arrival_Time}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Stops */}
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                    <Users className="w-4 h-4 text-indigo-500" />
+                    <span>Stops</span>
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                    {stops.map(stop => (
+                      <label key={stop.value} className="relative">
+                        <input
+                          type="radio"
+                          name="stops"
+                          value={stop.value}
+                          checked={formData.stops === stop.value}
+                          onChange={handleChange}
+                          className="sr-only"
+                        />
+                        <div className={`p-3 border-2 rounded-xl text-center text-sm font-medium cursor-pointer transition-all duration-200 ${
+                          formData.stops === stop.value 
+                            ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                            : 'border-gray-200 bg-gray-50/50 text-gray-600 hover:border-gray-300'
+                        }`}>
+                          <div className="text-lg mb-1">{stop.icon}</div>
+                          <div>{stop.label}</div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Airline */}
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                    <Plane className="w-4 h-4 text-blue-500" />
+                    <span>Preferred Airline</span>
+                  </label>
+                  <select
+                    name="airline"
+                    value={formData.airline}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-50/80 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                    required
+                  >
+                    {airlines.map(airline => (
+                      <option key={airline.value} value={airline.value}>{airline.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Submit Button */}
+                <div className="pt-4">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl font-semibold text-sm hover:from-blue-700 hover:to-blue-800 transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2 shadow-lg shadow-blue-500/25"
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Predicting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp className="w-4 h-4" />
+                        <span>Predict Flight Price</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Prediction Result */}
+              {prediction && (
+                <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200/50 rounded-2xl">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-green-900 mb-1">Price Prediction</h3>
+                      <p className="text-green-800 text-lg font-medium">{prediction}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Info Card */}
+          <div className="mt-6 bg-blue-50/50 backdrop-blur-sm border border-blue-200/30 rounded-2xl p-4">
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-blue-800">
+                <p className="font-medium mb-1">How it works</p>
+                <p className="text-blue-700/80">Our AI analyzes historical flight data, seasonal trends, and market patterns to provide accurate price predictions for your travel dates.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="rounded-xl shadow-lg"
+      />
     </div>
   );
 };
